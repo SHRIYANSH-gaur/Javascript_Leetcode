@@ -15,6 +15,18 @@ async function sleep(millis) {
  * let t = Date.now()
  * sleep(100).then(() => console.log(Date.now() - t)) // 100
  
+ The Promise constructor requires a function (known as the executor) with two parameters: "resolve" and "reject". These parameters are both functions that control the promise's outcome. Specifically, the "resolve" function fulfills the promise when it's called, and the argument you pass to "resolve" can be accessed in the first function argument within the .then block. In simple terms, invoking "resolve" completes the promise. The reason "resolve" is the first argument in the setTimeout function is that setTimeout executes the function passed as its first argument after the duration specified in the second argument has passed.
+
+Here's an illustrative example:
+
+function examplePromise() {
+   console.log('Start');
+   return sleep(1000).then(function(argumentPassedIntoResolve) {
+       console.log(argumentPassedIntoResolve); //this will log 'end'
+   });
+}
+ 
+ 
  Overview
 The problem involves the concept of asynchronous programming. Specifically, it focuses on promises and the setTimeout function, a web API method that introduces a delay in the execution of code.
 
