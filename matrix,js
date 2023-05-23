@@ -1,0 +1,78 @@
+
+var jsonToMatrix = function (arr) {
+  const isObject = elem => elem instanceof Object
+
+  const getSub = (obj) => {
+    const map = new Map()
+
+    const setMap = (elem, preKey) => {
+      if (!isObject(elem)) {
+        map.set(preKey, elem)
+        return
+      }
+
+      const subMap = getSub(elem)
+      for (const entry of subMap.entries()) {
+        const symbol = `${preKey}.${entry[0]}`
+        map.set(symbol, entry[1])
+      }
+    }
+
+    if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        setMap(obj[i], `${i}`)
+      }
+    } else {
+      for (const key of Object.keys(obj)) {
+        setMap(obj[key], key)
+      }
+    }
+
+    return map
+  }
+
+  const map = getSub(arr)
+  const set = new Set()
+
+  for (const key of map.keys()) {
+    const i = key.indexOf('.')
+    const symbol = key.slice(i + 1)
+    set.add(symbol)
+  }
+
+  const keys = [...set].sort((a, b) => a < b ? -1 : 1)
+  const len = arr.length
+  const matrix = [keys]
+
+  for (let i = 1; i <= len; i++) {
+    if (keys.length === 0) {
+      matrix[i] = []
+      continue
+    }
+
+    for (let j = 0; j < keys.length; j++) {
+      const key = `${i - 1}.${keys[j]}`
+      if (!matrix[i]) {
+        matrix[i] = []
+      }
+      matrix[i][j] = map.has(key) ? map.get(key) : ""
+    }
+  }
+
+  return matrix
+};
+
+/*
+The task is to write a function that converts an array of objects arr into a matrix m. The array arr can contain objects or arrays, which can be deeply nested and may contain various data types such as numbers, strings, booleans, and null values.
+The matrix m should have the first row as column names, where the column names are either unique keys within the objects (if there is no nesting) or the respective paths in the object separated by "." (if there is nesting).
+The remaining rows of the matrix correspond to the objects in arr, and each value in the matrix corresponds to a value in the object.
+If a given object doesn't have a value for a specific column, the corresponding cell in the matrix should contain an empty string "".
+Note: The columns in the matrix should be sorted in lexicographically ascending order. It is an arrangement of characters, words, or numbers in alphabetical order, similar to searching for a particular word in an actual dictionary thus sometimes its also called as dictionary order.
+
+Use Cases:
+Data Analysis: Converting the array of objects into a matrix format can be useful for performing various data analysis tasks. It allows you to organize and structure the data in a tabular format, making it easier to perform calculations, aggregations, and statistical analysis.
+Database Operations: When interacting with databases, it is often necessary to convert the retrieved data into a matrix format to manipulate or display it. The matrix representation provides a structured format that can be easily integrated with database operations and queries.
+Data Export: If you need to export data from your application or system, converting it into a matrix format can be beneficial. Many data interchange formats, such as CSV (Comma-Separated Values) or Excel spreadsheets, follow a tabular structure similar to a matrix. Converting the data into a matrix makes it compatible with these formats, simplifying the exporting process.
+Visualization: Matrices are commonly used as input for various visualization techniques, such as charts, graphs, and heatmaps. By converting the array of objects into a matrix, you can feed the data directly into visualization libraries or tools, enabling you to create meaningful visual representations of the data
+
+*/
